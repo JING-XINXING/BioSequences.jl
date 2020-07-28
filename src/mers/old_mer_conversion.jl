@@ -6,7 +6,7 @@
 ###
 ### This file is a part of BioJulia.
 ### License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
-
+#=
 # Create a Mer from a sequence whose elements are convertible to a nucleotide.
 function (::Type{T})(seq) where {T<:AbstractMer}
     seqlen = length(seq)
@@ -53,3 +53,4 @@ LongSequence{A}(x::AbstractMer{RNAAlphabet{2},K}) where {A<:RNAAlphabet,K} = Lon
 LongSequence(x::AbstractMer{A,K}) where {A,K} = LongSequence{A}([nt for nt in x])
 
 Base.convert(::Type{U}, x::AbstractMer) where {U<:Unsigned} = convert(U, encoded_data(x))
+=#

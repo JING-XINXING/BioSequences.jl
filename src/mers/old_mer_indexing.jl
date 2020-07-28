@@ -1,7 +1,7 @@
 ###
 ### Mer specific specializations of src/biosequence/indexing.jl
 ###
-
+#=
 @inline _offset(K, i) = 2(K - i)
 @inline offset(::Type{T}, i::Integer) where {A,K,T<:AbstractMer{A,K}} = 2(K - i)
 @inline offset(x::AbstractMer, i::Integer) = offset(typeof(x), i)
@@ -16,3 +16,4 @@ function Base.getindex(mer::T, r::OrdinalRange{<:Integer, <:Integer}) where {A,K
     new_T = parameterless_mer_type{A, new_K}
     return new_T(mer[i] for i in r)
 end
+=#
