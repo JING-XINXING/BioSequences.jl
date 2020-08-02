@@ -93,7 +93,7 @@ end
 
 function Base.rand(::Type{Kmer{A,K,N}}) where {A,K,N}
     checkmer(Kmer{A,K,N})
-    return Kmer{A,K,N}((rand(UInt64) >> (64N - 2K), ntuple(i -> rand(UInt64), N - 1)))
+    return Kmer{A,K,N}((rand(UInt64) >> (64N - 2K), ntuple(i -> rand(UInt64), N - 1)...))
 end
 
 function Base.rand(::Type{T}, size::Integer) where {T<:Kmer}
@@ -173,6 +173,11 @@ include("transformations.jl")
 ### Kmer de-bruijn neighbors
 ###
 
+# TODO: Decide on this vs. old iterator pattern. I like the terseness of the code vs defining an iterator. Neither allocate.
+fw_neighbors(kmer::Kmer) = ntuple(Val{4}(), i -> kmer << ACGT[i])
+
+
+#=
 # Neighbors on a de Bruijn graph
 struct KmerNeighborIterator{S<:Kmer}
     x::S
@@ -196,6 +201,7 @@ function Base.iterate(it::KmerNeighborIterator{S}, i::UInt64 = 0) where {S<:Kmer
         return it.x << 1, i + one(UInt64)
     end
 end
+=#
 
 ###
 ### String literals
@@ -204,29 +210,18 @@ end
 macro mer_str(seq, flag)
     seq′ = remove_newlines(seq)
     if flag == "dna" || flag == "d"
-        return DNAMer(seq′)
+        T = kmertype(DNAKmer{length(seq′)})
+        return T(seq′)
     elseif flag == "rna" || flag == "r"
-        return RNAMer(seq′)
+        T = kmertype(RNAKmer{length(seq′)})
+        return T(seq′)
     else
         error("Invalid type flag: '$(flag)'")
     end
 end
 
 macro mer_str(seq)
-    return DNAMer(remove_newlines(seq))
-end
-
-macro bigmer_str(seq, flag)
     seq′ = remove_newlines(seq)
-    if flag == "dna" || flag == "d"
-        return BigDNAMer(seq′)
-    elseif flag == "rna" || flag == "r"
-        return BigRNAMer(seq′)
-    else
-        error("Invalid type flag: '$(flag)'")
-    end
-end
-
-macro bigmer_str(seq)
-    return BigDNAMer(remove_newlines(seq))
+    T = kmertype(DNAKmer{length(seq′)})
+    return T(seq′)
 end
